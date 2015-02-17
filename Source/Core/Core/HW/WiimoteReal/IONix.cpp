@@ -76,13 +76,22 @@ void WiimoteScanner::FindWiimotes(std::vector<Wiimote*> & found_wiimotes, Wiimot
 	// supposedly 1.28 seconds
 	int const wait_len = 1;
 
+	// changing to liac
+	int l = 0x9e8b00;
+	uint8_t lap[3] = { 0x33, 0x8b, 0x9e };
+	lap[0] = (l & 0xff);
+	lap[1] = (l >> 8) & 0xff;
+	lap[2] = (l >> 16) & 0xff;
+	///////
 	int const max_infos = 255;
 	inquiry_info scan_infos[max_infos] = {};
 	auto* scan_infos_ptr = scan_infos;
 	found_board = nullptr;
+	
+	//NOTICE_LOG(WIIMOTE, "SCANNING UNIX-STYLE!");
 
 	// Scan for Bluetooth devices
-	int const found_devices = hci_inquiry(device_id, wait_len, max_infos, nullptr, &scan_infos_ptr, IREQ_CACHE_FLUSH);
+	int const found_devices = hci_inquiry(device_id, wait_len, max_infos, lap, &scan_infos_ptr, IREQ_CACHE_FLUSH);
 	if (found_devices < 0)
 	{
 		ERROR_LOG(WIIMOTE, "Error searching for Bluetooth devices.");
